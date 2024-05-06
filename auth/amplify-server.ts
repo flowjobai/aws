@@ -11,7 +11,7 @@ const config = {
         Cognito: {
             userPoolId: (process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || process.env.COGNITO_USER_POOL_ID)!,
             userPoolClientId: (process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || process.env.COGNITO_USER_POOL_CLIENT_ID)!,
-            region: (process.env.NEXT_PUBLIC_REGION || process.env.REGION)!,
+            region: (process.env.NEXT_PUBLIC_COGNITO_REGION || process.env.NEXT_PUBLIC_REGION || process.env.COGNITO_REGION || process.env.REGION)!,
         },
     },
 };

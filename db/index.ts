@@ -13,7 +13,7 @@ if (process.env.ACCESS_KEY_ID && process.env.SECRET_ACCESS_KEY) {
         secretAccessKey: process.env.SECRET_ACCESS_KEY!,
     };
 }
-const rdsDataApi = new RDSDataClient(config);
+const index = new RDSDataClient(config);
 
 const database = {
     resourceArn: process.env.DATA_API_ARN,
@@ -58,7 +58,7 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
     });
     // try {
     const rows: Record<string, any>[] = [];
-    const { columnMetadata, records, numberOfRecordsUpdated } = await rdsDataApi.send(command);
+    const { columnMetadata, records, numberOfRecordsUpdated } = await index.send(command);
     if (columnMetadata && records) {
         //console.log(columnMetadata, records)
         for (const record of records) {
@@ -130,7 +130,7 @@ export async function batch(sql: string, params: Record<string, any>[]) {
         parameterSets,
         ...database,
     });
-    const result = await rdsDataApi.send(command);
+    const result = await index.send(command);
 }
 
 function asParameter(key: string, value: any): SqlParameter {
