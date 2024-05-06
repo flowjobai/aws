@@ -1,1 +1,2 @@
-console.log("Hello via Bun!");
+export { execute } from "./src/db/rds-data-api";
+

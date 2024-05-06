@@ -1,6 +1,9 @@
 {
   "name": "aws",
   "type": "module",
+  "scripts": {
+    "build": "bun build ./index.tsx --outdir ./dist"
+  },
   "dependencies": {
     "@aws-amplify/adapter-nextjs": "1.1.4",
     "@aws-amplify/ui-react": "^6.1.8",
