@@ -1,0 +1,14 @@
+{
+  "name": "aws",
+  "type": "module",
+  "dependencies": {
+    "@aws-amplify/adapter-nextjs": "1.1.4",
+    "@aws-amplify/ui-react": "^6.1.8",
+    "@aws-sdk/client-rds-data": "^3.549.0",
+    "date-fns": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  }
+}
