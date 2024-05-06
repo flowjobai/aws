@@ -1,7 +1,6 @@
 "use client";
 
 import "./auth.scss";
-import "@/amplify-client";
 import { Authenticator } from "@aws-amplify/ui-react";
 import React, { useEffect } from "react";
 
