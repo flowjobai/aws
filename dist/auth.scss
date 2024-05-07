@@ -1,0 +1,80 @@
+legend,
+.amplify-heading {
+    @apply text-2xl font-medium;
+}
+
+.amplify-flex {
+    @apply flex gap-4;
+}
+.amplify-field {
+    @apply flex flex-col gap-2;
+}
+.amplify-field-group {
+    .amplify-field-group__field-wrapper {
+        @apply flex-1;
+
+        .amplify-input {
+            @apply w-full px-3 py-2 border border-gray-300 rounded-md outline-none focus:ring-1;
+        }
+    }
+
+    // Show password
+    .amplify-field-group__outer-end {
+        @apply flex items-center justify-center text-secondary;
+    }
+}
+.amplify-visually-hidden {
+    @apply hidden;
+}
+.amplify-button {
+    @apply py-3 rounded-md uppercase font-medium tracking-widest text-sm;
+}
+.amplify-button--primary {
+    @apply bg-primary text-white flex justify-center hover:bg-theme-700;
+}
+//Forgot password container
+div[data-amplify-footer] {
+    @apply flex items-center justify-center mt-4;
+}
+// Forgot password
+.amplify-button--small {
+    @apply text-xs text-secondary hover:text-blue-500;
+}
+
+.amplify-alert--error {
+    @apply items-center bg-red-50 text-red-400 border border-red-200 p-3 rounded-md flex gap-4;
+
+    .amplify-alert__dismiss {
+        @apply hidden;
+    }
+}
+
+// The loading circle
+.amplify-loader {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+}
+.amplify-loader circle {
+    transform-origin: center center;
+    animation-name: amplify-loader-circular;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+}
+
+@keyframes amplify-loader-circular {
+    0% {
+        stroke-dasharray: 100% 200%;
+        transform: rotate(120deg);
+    }
+    50% {
+        stroke-dasharray: 20% 400%;
+    }
+    100% {
+        stroke-dasharray: 100% 200%;
+        transform: rotate(480deg);
+    }
+}
