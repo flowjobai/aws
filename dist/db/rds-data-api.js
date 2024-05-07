@@ -1,38 +1,25 @@
 import { RDSDataClient, ExecuteStatementCommand, BatchExecuteStatementCommand } from "@aws-sdk/client-rds-data";
-import { type SqlParameter } from "@aws-sdk/client-rds-data/dist-types/models/models_0";
 import { format } from "date-fns";
-
 console.log("Initializing data api", process.env.DATA_API_ARN);
-
 // Set the region if one is specified, else let it default to the SDK
-const config: Record<string, any> = process.env.DATA_API_REGION ? { region: process.env.DATA_API_REGION } : {};
-
+const config = process.env.DATA_API_REGION ? { region: process.env.DATA_API_REGION } : {};
 if (process.env.ACCESS_KEY_ID && process.env.SECRET_ACCESS_KEY) {
     config["credentials"] = {
-        accessKeyId: process.env.ACCESS_KEY_ID!,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.ACCESS_KEY_ID,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY,
     };
 }
 const index = new RDSDataClient(config);
-
 const database = {
     resourceArn: process.env.DATA_API_ARN,
     secretArn: process.env.DATA_API_SECRET_ARN,
     database: process.env.DATA_API_DATABASE,
 };
-
-export interface Field {
-    type: "string" | "number" | "boolean" | "json" | "date";
-    value: any;
-    fmt: string;
-}
-
 class ExecuteResult {
-    constructor(
-        public rows: Record<string, Field>[],
-        public updated: number,
-    ) {}
-
+    constructor(rows, updated) {
+        this.rows = rows;
+        this.updated = updated;
+    }
     single() {
         return this.rows[0];
     }
@@ -46,10 +33,9 @@ class ExecuteResult {
         return this.rows.map((row) => Object.fromEntries(Object.entries(row).map(([key, field]) => [key, field.value])));
     }
 }
-
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/rds-data/command/ExecuteStatementCommand/
-export async function execute(sql: string, params?: Record<string, any>): Promise<ExecuteResult> {
-    const parameters: SqlParameter[] = params ? Object.entries(params).map(([key, value]) => asParameter(key, value)) : [];
+export async function execute(sql, params) {
+    const parameters = params ? Object.entries(params).map(([key, value]) => asParameter(key, value)) : [];
     const command = new ExecuteStatementCommand({
         sql,
         parameters,
@@ -57,7 +43,7 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
         includeResultMetadata: true,
     });
     // try {
-    const rows: Record<string, any>[] = [];
+    const rows = [];
     const { columnMetadata, records, numberOfRecordsUpdated } = await index.send(command);
     if (columnMetadata && records) {
         //console.log(columnMetadata, records)
@@ -68,7 +54,7 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
             //     { stringValue: 'apollo-contacts-export - 2024-03-27T095203.105.csv' },
             //     { isNull: true },
             //     { stringValue: '2024-04-09 17:48:17.510924' }
-            const row: Record<string, any> = {};
+            const row = {};
             for (let i = 0; i < columnMetadata.length; i++) {
                 const { name, typeName } = columnMetadata[i];
                 const field = record[i];
@@ -77,7 +63,7 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
                 switch (typeName) {
                     case "timestamp":
                         const date = new Date(value);
-                        row[name!] = {
+                        row[name] = {
                             type: "date",
                             value: date,
                             fmt: value === null ? "" : format(date, "dd MMM HH:mm"),
@@ -85,7 +71,7 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
                         break;
                     case "serial":
                     case "int4":
-                        row[name!] = {
+                        row[name] = {
                             type: "number",
                             value,
                             fmt: value === null ? "" : value.toLocaleString("en-US"),
@@ -93,14 +79,14 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
                         break;
                     case "json":
                     case "jsonb":
-                        row[name!] = {
+                        row[name] = {
                             type: "object",
                             value: JSON.parse(value),
                             fmt: value || "",
                         };
                         break;
                     default:
-                        row[name!] = {
+                        row[name] = {
                             type: "string",
                             value,
                             fmt: value === null ? "" : value,
@@ -116,15 +102,13 @@ export async function execute(sql: string, params?: Record<string, any>): Promis
     //     return err;
     // }
 }
-
 // Convert the deeper detailed fields to just the fmt value
-export function formatted(rows: Record<string, Field>[]): Record<string, string>[] {
+export function formatted(rows) {
     return rows.map((row) => Object.fromEntries(Object.entries(row).map(([key, field]) => [key, field.fmt])));
 }
-
-export async function batch(sql: string, params: Record<string, any>[]) {
+export async function batch(sql, params) {
     homogeniseFields(sql, params);
-    const parameterSets: SqlParameter[][] = params ? params.map((param) => Object.entries(param).map(([key, value]) => asParameter(key, value))) : [];
+    const parameterSets = params ? params.map((param) => Object.entries(param).map(([key, value]) => asParameter(key, value))) : [];
     const command = new BatchExecuteStatementCommand({
         sql,
         parameterSets,
@@ -132,8 +116,7 @@ export async function batch(sql: string, params: Record<string, any>[]) {
     });
     const result = await index.send(command);
 }
-
-function asParameter(key: string, value: any): SqlParameter {
+function asParameter(key, value) {
     if (value === null || value === undefined) {
         return { name: key, value: { isNull: true } };
     }
@@ -153,11 +136,11 @@ function asParameter(key: string, value: any): SqlParameter {
             return { name: key, value: { stringValue: JSON.stringify(value) } };
     }
 }
-
 // Add entries with null for missing fields
-export function homogeniseFields(sql: string, rows: Record<string, any>[]) {
+export function homogeniseFields(sql, rows) {
+    var _a;
     // Find all the fields in the SQL - fields start with a colon
-    const fields = sql.match(/:([a-zA-Z0-9_]+)/g)?.map((field) => field.slice(1)) as string[];
+    const fields = (_a = sql.match(/:([a-zA-Z0-9_]+)/g)) === null || _a === void 0 ? void 0 : _a.map((field) => field.slice(1));
     for (const row of rows) {
         for (const field of fields) {
             if (!row[field]) {

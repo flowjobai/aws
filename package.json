@@ -1,8 +1,13 @@
 {
-  "name": "aws",
-  "type": "module",
+  "name": "@flowjobai/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
-    "build": "bun build ./index.tsx --outdir ./dist"
+    "build": "tsc"
   },
   "dependencies": {
     "@aws-amplify/adapter-nextjs": "1.1.4",
@@ -13,7 +18,7 @@
     "react": "^18"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/node": "^20.12.0",
     "@types/react": "^18",
     "typescript": "^5.0.0"
   }
