@@ -20,7 +20,7 @@ legend,
 
     // Show password
     .amplify-field-group__outer-end {
-        @apply flex items-center justify-center text-secondary;
+        @apply flex items-center justify-center text-zinc-700;
     }
 }
 .amplify-visually-hidden {
@@ -38,7 +38,7 @@ div[data-amplify-footer] {
 }
 // Forgot password
 .amplify-button--small {
-    @apply text-xs text-secondary hover:text-blue-500;
+    @apply text-xs text-zinc-700 hover:text-blue-500;
 }
 
 .amplify-alert--error {
