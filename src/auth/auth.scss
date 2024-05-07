@@ -30,8 +30,11 @@ legend,
     @apply py-3 rounded-md uppercase font-medium tracking-widest text-sm;
 }
 .amplify-button--primary {
-    @apply text-white flex justify-center hover:bg-theme-700;
+    @apply text-white flex justify-center;
     background-color: var(--color-primary);
+    &:hover {
+      filter: brightness(80%);
+    }
 }
 //Forgot password container
 div[data-amplify-footer] {
