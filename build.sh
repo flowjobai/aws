@@ -1,2 +1,2 @@
 tsc
-cp ./src/auth/auth.scss ./dist/auth.scss
+cp ./src/auth/auth.scss ./dist/auth/auth.scss
